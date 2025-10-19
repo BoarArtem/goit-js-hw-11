@@ -1,0 +1,16 @@
+import{a as y,S as h,i as s}from"./assets/vendor-T-YKDOSG.js";(function(){const o=document.createElement("link").relList;if(o&&o.supports&&o.supports("modulepreload"))return;for(const e of document.querySelectorAll('link[rel="modulepreload"]'))l(e);new MutationObserver(e=>{for(const r of e)if(r.type==="childList")for(const n of r.addedNodes)n.tagName==="LINK"&&n.rel==="modulepreload"&&l(n)}).observe(document,{childList:!0,subtree:!0});function t(e){const r={};return e.integrity&&(r.integrity=e.integrity),e.referrerPolicy&&(r.referrerPolicy=e.referrerPolicy),e.crossOrigin==="use-credentials"?r.credentials="include":e.crossOrigin==="anonymous"?r.credentials="omit":r.credentials="same-origin",r}function l(e){if(e.ep)return;e.ep=!0;const r=t(e);fetch(e.href,r)}})();const b="https://pixabay.com/api/",L="32802293-5821b85c58537e1609d134566";function v(i){const o={key:L,q:i,image_type:"photo",orientation:"horizontal",safesearch:!0,per_page:40};return y.get(b,{params:o}).then(t=>t.data).catch(t=>Promise.reject(t))}const c=document.querySelector(".gallery"),u=document.querySelector(".loader"),f=new h(".gallery a",{captionsData:"alt",captionDelay:250});function S(i){if(!c)return;const o=i.map(t=>{const{webformatURL:l,largeImageURL:e,tags:r,likes:n,views:p,comments:g,downloads:d}=t;return`
+        <li class="gallery-item">
+          <a class="gallery-link" href="${e}">
+            <div class="photo-card">
+              <img class="gallery-image" src="${l}" alt="${r}" loading="lazy" />
+              <div class="info">
+                <p class="info-item"><b>Likes:</b> ${n}</p>
+                <p class="info-item"><b>Views:</b> ${p}</p>
+                <p class="info-item"><b>Comments:</b> ${g}</p>
+                <p class="info-item"><b>Downloads:</b> ${d}</p>
+              </div>
+            </div>
+          </a>
+        </li>
+      `}).join("");c.insertAdjacentHTML("beforeend",o),f.refresh()}function q(){c&&(c.innerHTML="",f.refresh())}function w(){u&&u.classList.add("is-active")}function R(){u&&u.classList.remove("is-active")}const a=document.querySelector(".form"),m=a?a.querySelector('input[name="search-text"]'):null,$=document.querySelector(".gallery");(!a||!m||!$)&&(console.error("Не знайдено потрібних DOM-елементів: форма / інпут / галерея."),s.error({title:"Помилка",message:"Не знайдено елементів інтерфейсу. Перевірте HTML.",position:"topRight"}));a&&a.addEventListener("submit",function(i){i.preventDefault();const o=m.value.trim();if(!o){s.warning({title:"Увага",message:"Поле пошуку порожнє. Введіть пошукове слово.",position:"topRight"});return}q(),w(),v(o).then(t=>{if(!t||!Array.isArray(t.hits)){s.error({title:"Помилка",message:"Невірний формат відповіді від сервера.",position:"topRight"});return}if(t.hits.length===0){s.info({title:"Пошук",message:"Sorry, there are no images matching your search query. Please try again!",position:"topRight"});return}S(t.hits),s.success({title:"Знайдено",message:`Знайдено ${t.hits.length} зображень за запитом "${o}".`,position:"topRight"})}).catch(t=>{console.error("Помилка запиту:",t),s.error({title:"Помилка запиту",message:"Сталася помилка під час завантаження зображень. Перевірте підключення та API-ключ.",position:"topRight"})}).finally(()=>{R()})});
+//# sourceMappingURL=index.js.map
