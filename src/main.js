@@ -1,82 +1,56 @@
+import iziToast from "izitoast";
+import "izitoast/dist/css/iziToast.min.css";
+
 import { getImagesByQuery } from "./js/pixabay-api.js";
 import {
   createGallery,
   clearGallery,
   showLoader,
   hideLoader,
-} from "./js/render-functions.js"
-import iziToast from "izitoast";
-import "izitoast/dist/css/iziToast.min.css";
+} from "./js/render-functions.js";
 
 const form = document.querySelector(".form");
-const input = form ? form.querySelector('input[name="search-text"]') : null;
-const galleryEl = document.querySelector(".gallery");
+const input = document.querySelector(".search-text");
 
-if (!form || !input || !galleryEl) {
-  console.error("Не знайдено потрібних DOM-елементів: форма / інпут / галерея.");
-  iziToast.error({
-    title: "Помилка",
-    message: "Не знайдено елементів інтерфейсу. Перевірте HTML.",
-    position: "topRight",
-  });
-}
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const query = input.value.trim();
 
-if (form) {
-  form.addEventListener("submit", function (evt) {
-    evt.preventDefault();
+  if (query === "") {
+    iziToast.warning({
+      title: "Увага",
+      message: "Введіть слово для пошуку!",
+      position: "topRight",
+    });
+    return;
+  }
 
-    const query = input.value.trim();
+  clearGallery();
+  showLoader();
 
-    if (!query) {
-      iziToast.warning({
-        title: "Увага",
-        message: "Поле пошуку порожнє. Введіть пошукове слово.",
+  try {
+    const data = await getImagesByQuery(query);
+
+    if (data.hits.length === 0) {
+      iziToast.info({
+        title: "Нічого не знайдено",
+        message:
+          "Sorry, there are no images matching your search query. Please try again!",
         position: "topRight",
       });
+      hideLoader();
       return;
     }
 
-    clearGallery();
-    showLoader();
-    getImagesByQuery(query)
-      .then(data => {
-        if (!data || !Array.isArray(data.hits)) {
-          iziToast.error({
-            title: "Помилка",
-            message: "Невірний формат відповіді від сервера.",
-            position: "topRight",
-          });
-          return;
-        }
-
-        if (data.hits.length === 0) {
-          iziToast.info({
-            title: "Пошук",
-            message:
-              "Sorry, there are no images matching your search query. Please try again!",
-            position: "topRight",
-          });
-          return;
-        }
-
-        createGallery(data.hits);
-        iziToast.success({
-          title: "Знайдено",
-          message: `Знайдено ${data.hits.length} зображень за запитом "${query}".`,
-          position: "topRight",
-        });
-      })
-      .catch(error => {
-        console.error("Помилка запиту:", error);
-        iziToast.error({
-          title: "Помилка запиту",
-          message:
-            "Сталася помилка під час завантаження зображень. Перевірте підключення та API-ключ.",
-          position: "topRight",
-        });
-      })
-      .finally(() => {
-        hideLoader();
-      });
-  });
-}
+    createGallery(data.hits);
+  } catch (error) {
+    iziToast.error({
+      title: "Помилка",
+      message: "Виникла проблема з отриманням даних!",
+      position: "topRight",
+    });
+    console.error(error);
+  } finally {
+    hideLoader();
+  }
+});

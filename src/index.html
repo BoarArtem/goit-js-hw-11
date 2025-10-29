@@ -4,6 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1.0" />
   <title>goit-js-hw-11</title>
+  <link rel="stylesheet" href="css/styles.css" />
 </head>
 <body>
   <main>
@@ -14,11 +15,10 @@
       <button type="submit">Search</button>
     </form>
 
-    <div class="loader-container" aria-hidden="true">
-      <span class="loader"></span>
-    </div>
+    <span class="loader" hidden></span>
 
     <ul class="gallery"></ul>
+    <button type="button" class="load-more" hidden>Load more</button>
   </main>
 
   <script type="module" src="./main.js"></script>
